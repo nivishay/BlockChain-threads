@@ -10,15 +10,6 @@
 #include <pthread.h>
 #include <iomanip>
 
-#define NUM_MINERS 4
-#define DIFFICULTY 23
-
-pthread_cond_t block_hash_found = PTHREAD_COND_INITIALIZER;
-pthread_mutex_t block_hash_found_mutex = PTHREAD_MUTEX_INITIALIZER;
-
-pthread_cond_t newBlockByServer = PTHREAD_COND_INITIALIZER;
-pthread_mutex_t newBlockByServer_mutex = PTHREAD_MUTEX_INITIALIZER;
-
  typedef struct {
     int         	height;        // Incrementeal ID of the block in the chain
     int         	timestamp;    // Time of the mine in seconds since epoch
@@ -28,9 +19,18 @@ pthread_mutex_t newBlockByServer_mutex = PTHREAD_MUTEX_INITIALIZER;
     int         	nonce;        // Incremental integer to change the hash value
     int         	relayed_by;    // Miner ID
  } BLOCK_T;
- 
+
+#define NUM_MINERS 4
+#define DIFFICULTY 23
+
 std::list<BLOCK_T> blockChain;
 BLOCK_T block_to_be_mined;
+
+pthread_cond_t block_hash_found = PTHREAD_COND_INITIALIZER;
+pthread_mutex_t block_hash_found_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+pthread_cond_t newBlockByServer = PTHREAD_COND_INITIALIZER;
+pthread_mutex_t newBlockByServer_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 //miner functions//
 void* miner_thread(void* miner_id);
@@ -53,11 +53,13 @@ int main(int argc, char* argv[])
     pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
     param.sched_priority = 10; // Set priority to 10 (you can choose any value within the priority range)
     pthread_attr_setschedparam(&attr, &param);
+    
     pthread_cond_init(&block_hash_found, NULL);
     pthread_cond_init(&newBlockByServer, NULL);
 
     int miner_id;
     pthread_t miner;
+
     for (int i = 0; i < NUM_MINERS; i++) {//create miner threads
         miner_id = i+1;
         miner = miner_threads_id[i];
@@ -67,7 +69,6 @@ int main(int argc, char* argv[])
         for (int i = 0; i < NUM_MINERS; i++) {
         pthread_join(miner_threads_id[i], nullptr);
     }
-
     pthread_create(&server_t,&attr,server_thread, nullptr);//create server thread
 
     pthread_join(server_t, nullptr);//join server thread
@@ -105,10 +106,10 @@ void* server_thread(void* server_id)
 }
 void ServerBlockMessage(BLOCK_T block) {
     std::cout<<"Server: new block added by "<<block_to_be_mined.relayed_by<<" attributes: ("<<block_to_be_mined.height<<"), Timestamp("<<block_to_be_mined.timestamp<<"), hash (0x"<<std::hex<<block_to_be_mined.hash<<"), prev_hash(0x"<<std::hex<<block_to_be_mined.prev_hash<<"), difficulty ("<<block_to_be_mined.difficulty<<"), nonce ("<<block_to_be_mined.nonce<<")"<<std::endl;
-}
+}//TODO:change hex to dec
 void MinerBlockMessage(BLOCK_T block)
 {
-   std::cout<<"Miner #"<<block_to_be_mined.relayed_by << ": Mined a new block #"<<block_to_be_mined.height<<" with hash 0x"<<std::hex<<block_to_be_mined.hash<<std::endl;
+   std::cout<<"Miner #"<<block_to_be_mined.relayed_by << ": Mined a new block #"<<block_to_be_mined.height<<" with hash 0x"<<std::hex<<block_to_be_mined.hash<<std::endl;//TODO:change hex to dec
 }
 ///////////////////////////////////////
 //FUNCTIONS FOR CALCULATING THE HASH//
