@@ -29,8 +29,7 @@ pthread_mutex_t newBlockByServer_mutex = PTHREAD_MUTEX_INITIALIZER;
     int         	relayed_by;    // Miner ID
  } BLOCK_T;
  
-
-std::list<BLOCK_T> blockChain;//
+std::list<BLOCK_T> blockChain;
 BLOCK_T block_to_be_mined;
 
 //miner functions//
@@ -40,7 +39,6 @@ bool hasLeadingZeroBits(unsigned int number, int x);
 int countLeadingZeros(unsigned int number);
 unsigned long mineBlock(BLOCK_T& block,int difficulty);
 
-
 //SERVER FUNCTIONS//
 void* server_thread(void* server_id);
 void ServerBlockMessage(BLOCK_T block);
@@ -48,24 +46,22 @@ void MinerBlockMessage(BLOCK_T block);
 
 int main(int argc, char* argv[])
 {
-    std::vector<pthread_t> miner_threads_id(NUM_MINERS+1);//vector of miner threads 
-
+    std::vector<pthread_t> miner_threads_id(NUM_MINERS+1);//vector of miner threads
     pthread_t server_t;//server thread
     pthread_attr_t attr; // Thread attributes
     struct sched_param param; // Scheduling parameters
     pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
     param.sched_priority = 10; // Set priority to 10 (you can choose any value within the priority range)
     pthread_attr_setschedparam(&attr, &param);
-
     pthread_cond_init(&block_hash_found, NULL);
     pthread_cond_init(&newBlockByServer, NULL);
+
     int miner_id;
     pthread_t miner;
     for (int i = 0; i < NUM_MINERS; i++) {//create miner threads
-
         miner_id = i+1;
         miner = miner_threads_id[i];
-        pthread_create(&miner, nullptr, miner_thread,&miner_id);
+        pthread_create(&miner, nullptr,miner_thread,&miner_id);
     }
 
         for (int i = 0; i < NUM_MINERS; i++) {
@@ -75,10 +71,9 @@ int main(int argc, char* argv[])
     pthread_create(&server_t,&attr,server_thread, nullptr);//create server thread
 
     pthread_join(server_t, nullptr);//join server thread
-    
+
     return 0;
 }
-
 void* miner_thread(void* miner_id)
 {
     int id = *(int*)miner_id;
@@ -105,7 +100,6 @@ void* server_thread(void* server_id)
         sleep(2);
         block_to_be_mined = {block_to_be_mined.height + 1,static_cast<int>(time(nullptr)), 0,blockChain.back().hash, DIFFICULTY,1, -1};
         pthread_mutex_unlock(&block_hash_found_mutex);
-
     }
     return 0;
 }
@@ -115,10 +109,11 @@ void ServerBlockMessage(BLOCK_T block) {
 void MinerBlockMessage(BLOCK_T block)
 {
    std::cout<<"Miner #"<<block_to_be_mined.relayed_by << ": Mined a new block #"<<block_to_be_mined.height<<" with hash 0x"<<std::hex<<block_to_be_mined.hash<<std::endl;
-
 }
+///////////////////////////////////////
 //FUNCTIONS FOR CALCULATING THE HASH//
 /////////////////////////////////////
+
 unsigned long calculateCRC32(const BLOCK_T& block) {
     unsigned long crc = crc32(0, nullptr, 0);
     crc = crc32(crc, reinterpret_cast<const Bytef*>(&block), sizeof(block));
