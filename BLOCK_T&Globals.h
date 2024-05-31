@@ -23,14 +23,16 @@
     int         	relayed_by;    // Miner ID
  }BLOCK_T;
 
+extern BLOCK_T block_to_be_mined;
+extern pthread_cond_t block_hash_found;
+extern pthread_mutex_t block_hash_found_mutex;
+
+extern pthread_cond_t newBlockByServer;
+extern pthread_mutex_t newBlockByServer_mutex;
+
 #define NUM_MINERS 4
 #define DIFFICULTY 23
 
-BLOCK_T block_to_be_mined;
-pthread_cond_t block_hash_found = PTHREAD_COND_INITIALIZER;
-pthread_mutex_t block_hash_found_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-pthread_cond_t newBlockByServer = PTHREAD_COND_INITIALIZER;
-pthread_mutex_t newBlockByServer_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 #endif //_WIN32

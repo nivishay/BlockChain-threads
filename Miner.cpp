@@ -35,6 +35,11 @@ unsigned long FakeMiner::mineBlock(BLOCK_T& block,int difficulty) {
     uint32_t crc;
     return crc = calculateCRC32(block);
 }
+unsigned long Miner::calculateCRC32(const BLOCK_T& block) {
+    unsigned long crc = crc32(0, nullptr, 0);
+    crc = crc32(crc, reinterpret_cast<const Bytef*>(&block), sizeof(block));
+    return crc;
+}
 
 void* Miner::start(){
         while (true){

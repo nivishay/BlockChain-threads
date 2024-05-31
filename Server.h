@@ -20,7 +20,7 @@ public:
     pthread_join(server_t,nullptr);//join server thread
     }
     void addBlock(BLOCK_T block);
-    void start();
+    void* start();
 };
 
 #endif // SERVER_H
