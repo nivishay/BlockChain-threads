@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef SERVER_H
+#define SERVER_H
 #include "BLOCK_T&Globals.h"
 #include <iostream>
 #include <list>
@@ -20,5 +20,7 @@ public:
     pthread_join(server_t,nullptr);//join server thread
     }
     void addBlock(BLOCK_T block);
-    void start(BLOCK_T& block);
+    void start();
 };
+
+#endif // SERVER_H
