@@ -9,12 +9,6 @@ class Miner
     std::thread miner;
 
     //calculating the hash//
-    bool hasLeadingZeroBits(unsigned int number, int x);
-    int countLeadingZeros(unsigned int number);
-
-    protected:
-    unsigned long calculateCRC32(const BLOCK_T& block);
-    
     public:
     virtual unsigned long mineBlock(BLOCK_T& block,int difficulty);
     Miner() = default;
@@ -22,7 +16,7 @@ class Miner
     {
         miner = std::thread(&Miner::start,this,nullptr);
     }
-
+    void relayMinedBlock();
     void join() 
     {
         if(miner.joinable())
@@ -40,6 +34,8 @@ class Miner
 class FakeMiner : public Miner
 {
     public:
+    FakeMiner(int id):Miner(id){
+    }
     unsigned long mineBlock(BLOCK_T& block,int difficulty) override;
 };
 

@@ -6,18 +6,16 @@
 
  pthread_cond_t newBlockByServer = PTHREAD_COND_INITIALIZER;
  pthread_mutex_t newBlockByServer_mutex = PTHREAD_MUTEX_INITIALIZER;
- 
+
  BLOCK_T block_to_be_mined = {1, static_cast<int>(time(nullptr)), 0, 0, DIFFICULTY, 0, -1};
- using namespace std;
- 
  
 int main(int argc, char* argv[])
 {
-
     std::vector<Miner*> miner_threads(NUM_MINERS);//vector of miner threads
-    
     for (int i = 1; i < NUM_MINERS; i++) 
         miner_threads[i] = new Miner(i);//TODO:needs to add the fake Miner
+        
+    miner_threads.emplace_back(new FakeMiner(FAKE_MINER_ID));//TODO:needs to add the fake Miner
     Server server;
     return 0;
 }
