@@ -24,7 +24,8 @@
     int         	relayed_by;    // Miner ID
  }BLOCK_T;
 
-
+extern BLOCK_T mined_block;
+extern unsigned int hash_found;        // Current block hash value
 extern BLOCK_T block_to_be_mined;
 extern pthread_cond_t block_hash_found;
 extern pthread_mutex_t block_hash_found_mutex;

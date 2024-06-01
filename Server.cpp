@@ -1,6 +1,7 @@
 #include "Server.h"
 
-Server::Server() {
+Server::Server()
+ {
     pthread_attr_t attr; // Thread attributes
     struct sched_param param; // Scheduling parameters
     pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
@@ -9,38 +10,46 @@ Server::Server() {
     server_t = std::thread(&Server::start,this,nullptr);
 }
 
-void Server::addBlock(BLOCK_T block) {
+void Server::addBlock(BLOCK_T block)
+ {
     blockChain.push_back(block);
     ServerBlockMessage(block); 
 }
-void Server::ServerBlockMessage(BLOCK_T block) {
+
+void Server::ServerBlockMessage(BLOCK_T block)
+ {
     std::cout<<"Server: new block added by "<<block.relayed_by<<" attributes: ("<<block.height<<"), Timestamp("<<block.timestamp<<"), hash (0x";
     std::cout<<std::hex<<block.hash<<"), prev_hash(0x"<<std::hex<<block.prev_hash<<"), difficulty (";
     std::cout<<std::dec<<block.difficulty<<"), nonce ("<<block.nonce<<")"<<std::endl;
 }
-bool Server::isValidHash(BLOCK_T block) {
-    unsigned long hash = block_to_be_mined.hash;
-    block_to_be_mined.hash = 0;
-    if(hash == calculateCRC32(block_to_be_mined))
-    {
-        block_to_be_mined.hash = hash;
+
+bool Server::isValidHash(BLOCK_T block) 
+{
+    if(hash_found == calculateCRC32(mined_block))
         return true;
-    }
-    std::cout<<calculateCRC32(block_to_be_mined)<<" != "<<hash<<std::endl;
+
+    std::cout<<calculateCRC32(mined_block)<<" != "<<hash_found<<std::endl;
     return false;
 }
+
 void* Server::start(void* arg)
  {
     while (true) {
+
         pthread_cond_broadcast(&newBlockByServer);//notify the miners that a new block is found
         pthread_mutex_lock(&block_hash_found_mutex);
         pthread_cond_wait(&block_hash_found, &block_hash_found_mutex);
-        if(isValidHash(block_to_be_mined))
+
+        if(mined_block.height == blockChain.back().height) //TODO: Why this condition is not working?
+            std::cout<<"Server: block already mined, block not added"<<std::endl;
+            
+        else if(isValidHash(mined_block))
         {
-            addBlock(block_to_be_mined);
+            mined_block.hash = hash_found;
+            addBlock(mined_block);
             sleep(2);
             //TODO: need to modify so the server take the first block only
-            block_to_be_mined = {block_to_be_mined.height + 1,static_cast<int>(time(nullptr)), 0,blockChain.back().hash, DIFFICULTY,1, -1};
+            block_to_be_mined = {mined_block.height + 1,static_cast<int>(time(nullptr)), 0,blockChain.back().hash, DIFFICULTY,1, -1};
         }
         else
         {
