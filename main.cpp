@@ -13,15 +13,11 @@
  
 int main(int argc, char* argv[])
 {
-    //TODO:chage the +1
-    std::vector<Miner*> miner_threads(NUM_MINERS+1);//vector of miner threads
 
-    pthread_cond_init(&block_hash_found, NULL);
-    pthread_cond_init(&newBlockByServer, NULL);
+    std::vector<Miner*> miner_threads(NUM_MINERS);//vector of miner threads
     
-    for (int i = 0; i < NUM_MINERS; i++) {//create miner threads
-        miner_threads[i] = new Miner(i+1);
-    }
+    for (int i = 1; i < NUM_MINERS; i++) 
+        miner_threads[i] = new Miner(i);//TODO:needs to add the fake Miner
     Server server;
     return 0;
 }

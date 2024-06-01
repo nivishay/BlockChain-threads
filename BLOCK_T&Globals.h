@@ -30,8 +30,8 @@ extern pthread_mutex_t block_hash_found_mutex;
 extern pthread_cond_t newBlockByServer;
 extern pthread_mutex_t newBlockByServer_mutex;
 
-#define NUM_MINERS 4
-#define DIFFICULTY 23
+#define NUM_MINERS 5
+#define DIFFICULTY 23//TODO:needs to be argv from the program
 
 
 
