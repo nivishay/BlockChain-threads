@@ -21,6 +21,10 @@ public:
             server_t.join();
         }
     }
+    ~Server()
+    {
+        join();
+    }
     void addBlock(BLOCK_T block);
     void* start(void* arg);
 };

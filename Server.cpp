@@ -6,7 +6,7 @@ Server::Server() {
     pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
     param.sched_priority = 10; // Set priority to 10 (you can choose any value within the priority range)
     pthread_attr_setschedparam(&attr, &param);
-    std::thread(&Server::start,this,nullptr).detach();
+    server_t = std::thread(&Server::start,this,nullptr);
 }
 void Server::addBlock(BLOCK_T block) {
     blockChain.push_back(block);

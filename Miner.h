@@ -20,8 +20,7 @@ class Miner
     Miner() = default;
     Miner(int id):id(id)
     {
-        std::thread(&Miner::start,this,nullptr).detach();
-        std::cout<<"Miner #"<<id<<" created"<<std::endl;
+        miner = std::thread(&Miner::start,this,nullptr);
     }
 
     void join() 
@@ -33,7 +32,10 @@ class Miner
     void* start(void* arg);
     void MinerBlockMessage(BLOCK_T block);
 
-    ~Miner() = default;
+    ~Miner()
+    {
+        join();
+    }
 };
 class FakeMiner : public Miner
 {

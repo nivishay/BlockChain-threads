@@ -22,10 +22,6 @@ int main(int argc, char* argv[])
     for (int i = 0; i < NUM_MINERS; i++) {//create miner threads
         miner_threads[i] = new Miner(i+1);
     }
-       for (int i = 0; i < NUM_MINERS; i++) {//create miner threads
-        miner_threads[i]->join();
-    }
     Server server;
-    server.join();
     return 0;
 }
