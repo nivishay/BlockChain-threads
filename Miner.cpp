@@ -43,13 +43,13 @@ void* Miner::start(void* arg) {
         while (true){
         pthread_mutex_lock(&newBlockByServer_mutex);
         pthread_cond_wait(&newBlockByServer, &newBlockByServer_mutex);
-        std::cout<<"Miner #"<<id<<" waiting for new block"<<std::endl;
         block_to_be_mined.hash = mineBlock(block_to_be_mined, block_to_be_mined.difficulty);
         block_to_be_mined.relayed_by = id;
         MinerBlockMessage(block_to_be_mined);
         //UNLOCK
         pthread_cond_signal(&block_hash_found);
     }
+    return nullptr;
 }
 void Miner::MinerBlockMessage(BLOCK_T block)
 {

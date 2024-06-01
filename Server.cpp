@@ -7,7 +7,6 @@ Server::Server() {
     param.sched_priority = 10; // Set priority to 10 (you can choose any value within the priority range)
     pthread_attr_setschedparam(&attr, &param);
     std::thread(&Server::start,this,nullptr).detach();
-    std::cout<<"Server created"<<std::endl;
 }
 void Server::addBlock(BLOCK_T block) {
     blockChain.push_back(block);
@@ -16,7 +15,8 @@ void Server::addBlock(BLOCK_T block) {
 void Server::ServerBlockMessage(BLOCK_T block) {
     std::cout<<"Server: new block added by "<<block.relayed_by<<" attributes: ("<<block.height<<"), Timestamp("<<block.timestamp<<"), hash (0x"<<std::hex<<block.hash<<"), prev_hash(0x"<<std::hex<<block.prev_hash<<"), difficulty ("<<block.difficulty<<"), nonce ("<<block.nonce<<")"<<std::endl;
 }
-void* Server::start(void* arg) {
+void* Server::start(void* arg)
+ {
     while (true) {
         pthread_cond_broadcast(&newBlockByServer);//notify the miners that a new block is found
         pthread_mutex_lock(&block_hash_found_mutex);
@@ -26,4 +26,5 @@ void* Server::start(void* arg) {
         block_to_be_mined = {block_to_be_mined.height + 1,static_cast<int>(time(nullptr)), 0,blockChain.back().hash, DIFFICULTY,1, -1};
         pthread_mutex_unlock(&block_hash_found_mutex);
     }
+    return nullptr;
 }
