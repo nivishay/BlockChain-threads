@@ -32,9 +32,9 @@ extern pthread_mutex_t block_hash_found_mutex;
 
 extern pthread_cond_t newBlockByServer;
 extern pthread_mutex_t newBlockByServer_mutex;
-#define FAKE_MINER_ID -1
+#define FAKE_MINER_ID 1
 #define NUM_MINERS 5
-#define DIFFICULTY 20//TODO:needs to be argv from the program
+extern int  DIFFICULTY;//TODO:needs to be argv from the program
 
 bool hasLeadingZeroBits(unsigned int number, int x);
 int countLeadingZeros(unsigned int number);

@@ -4,8 +4,10 @@
 
 class Miner
 {
-    private:
+    protected:
     int id;
+    
+    private:
     std::thread miner;
 
     //calculating the hash//
@@ -29,13 +31,16 @@ class Miner
     {
         join();
     }
+
 };
 class FakeMiner : public Miner
 {
     public:
         FakeMiner(int id):Miner(id){
+            std::cout<<"sajldkjsad"<<std::endl;
     }
     unsigned long mineBlock() override;
 };
+
 
 #endif // MINER_H

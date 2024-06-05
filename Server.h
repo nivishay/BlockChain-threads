@@ -7,7 +7,6 @@
 class Server
 {
 private:
-
     std::list<BLOCK_T> blockChain;
     bool block_already_mined = false;
     std::thread server_t;//server thread
