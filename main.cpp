@@ -11,6 +11,8 @@
  BLOCK_T mined_block;
  int  DIFFICULTY = 10;
  unsigned int hash_found = 0;     // Current block hash value
+ std::queue <BLOCK_T> mined_blocks;
+
  
 int main(int argc, char* argv[])
 {

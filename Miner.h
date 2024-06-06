@@ -36,9 +36,8 @@ class Miner
 class FakeMiner : public Miner
 {
     public:
-        FakeMiner(int id):Miner(id){
-            std::cout<<"sajldkjsad"<<std::endl;
-    }
+        FakeMiner(int id):Miner(id){}
+    
     unsigned long mineBlock() override;
 };
 

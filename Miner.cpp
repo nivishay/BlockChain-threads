@@ -14,8 +14,8 @@ unsigned long Miner::mineBlock(){//TODO:no need for the parameters
         if(hasLeadingZeros)
         {
             hash_found = crc;
-            mined_block = miner_block;
-            relayMinedBlock(mined_block);
+            mined_blocks.push(miner_block);
+            relayMinedBlock(mined_blocks.back());
         }
         miner_block.nonce++;
         pthread_mutex_unlock(&newBlockByServer_mutex);
@@ -34,8 +34,8 @@ unsigned long FakeMiner::mineBlock()
         miner_block.relayed_by = id;
         crc = calculateCRC32(miner_block);
         hash_found = crc;
-        mined_block = miner_block;
-        relayMinedBlock(mined_block);
+        mined_blocks.push(miner_block);
+        relayMinedBlock(mined_blocks.back());
         pthread_mutex_unlock(&newBlockByServer_mutex);
         std::this_thread::sleep_for(std::chrono::seconds(2));
     }
