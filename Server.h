@@ -7,7 +7,6 @@
 class Server
 {
 private:
-
     std::list<BLOCK_T> blockChain;
     bool block_already_mined = false;
     std::thread server_t;//server thread
@@ -27,7 +26,7 @@ public:
     {
         join();
     }
-    bool isValidHash(BLOCK_T block);
+    bool isValidHash(const BLOCK_T block);
     void addBlock(BLOCK_T block);
     void* start(void* arg);
 };

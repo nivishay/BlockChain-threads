@@ -14,8 +14,8 @@ unsigned long Miner::mineBlock(){//TODO:no need for the parameters
         if(hasLeadingZeros)
         {
             hash_found = crc;
-            mined_block = miner_block;
-            relayMinedBlock(mined_block);
+            mined_blocks.push(miner_block);
+            relayMinedBlock(mined_blocks.back());
         }
         miner_block.nonce++;
         pthread_mutex_unlock(&newBlockByServer_mutex);
@@ -25,10 +25,21 @@ unsigned long Miner::mineBlock(){//TODO:no need for the parameters
 }
 unsigned long FakeMiner::mineBlock()
  {
-    BLOCK_T block = block_to_be_mined;
-    std::this_thread::sleep_for(std::chrono::seconds(1));
     uint32_t crc;
-    return crc = calculateCRC32(block);
+    BLOCK_T miner_block = block_to_be_mined;
+    while (true)
+    {
+        miner_block = block_to_be_mined;
+        pthread_mutex_lock(&newBlockByServer_mutex);
+        miner_block.relayed_by = id;
+        crc = calculateCRC32(miner_block);
+        hash_found = crc;
+        mined_blocks.push(miner_block);
+        relayMinedBlock(mined_blocks.back());
+        pthread_mutex_unlock(&newBlockByServer_mutex);
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+    }
+    return crc;
 }
 
 void* Miner::start(void* arg) {
@@ -42,7 +53,7 @@ void* Miner::start(void* arg) {
 }
 void Miner::MinerBlockMessage(BLOCK_T block)
 {
-   std::cout<<"Miner #"<<block.relayed_by << ": Mined a new block #"<<block.height<<" with hash 0x";
+   std::cout<<typeid(*this).name() + 1<<"#"<<block.relayed_by << ": Mined a new block #"<<block.height<<" with hash 0x";//+1 to skip the number before the class name
    std::cout<<std::hex<<hash_found<<std::endl;
    std::cout<<std::dec;
 }

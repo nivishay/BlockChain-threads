@@ -12,7 +12,7 @@
 #include <ctime>
 #include <pthread.h>
 #include <iomanip>
-
+#include <queue>
 
  typedef struct {
     int         	height;        // Incrementeal ID of the block in the chain
@@ -24,7 +24,7 @@
     int         	relayed_by;    // Miner ID
  }BLOCK_T;
 
-extern BLOCK_T mined_block;
+extern std::queue <BLOCK_T> mined_blocks;
 extern unsigned int hash_found;        // Current block hash value
 extern BLOCK_T block_to_be_mined;
 extern pthread_cond_t block_hash_found;
@@ -32,9 +32,9 @@ extern pthread_mutex_t block_hash_found_mutex;
 
 extern pthread_cond_t newBlockByServer;
 extern pthread_mutex_t newBlockByServer_mutex;
-#define FAKE_MINER_ID -1
+#define FAKE_MINER_ID 1
 #define NUM_MINERS 5
-#define DIFFICULTY 20//TODO:needs to be argv from the program
+extern int  DIFFICULTY;//TODO:needs to be argv from the program
 
 bool hasLeadingZeroBits(unsigned int number, int x);
 int countLeadingZeros(unsigned int number);
