@@ -15,8 +15,7 @@
  
 int main(int argc, char* argv[])
 {
-    std::cout << "Enter difficulty: ";
-    std::cin >> DIFFICULTY;
+    DIFFICULTY = atoi(argv[1]);
     std::vector<Miner*> miner_threads(NUM_MINERS);//vector of miner threads
     for (int i = 1; i < NUM_MINERS; i++) 
         miner_threads[i] = new Miner(i);
