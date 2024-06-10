@@ -23,13 +23,16 @@ void Server::ServerBlockMessage(BLOCK_T block)
     std::cout<<std::dec<<block.difficulty<<"), nonce ("<<block.nonce<<")"<<std::endl;
 }
 
-bool Server::isValidHash(const BLOCK_T block) 
+bool Server::isValidHash(BLOCK_T block) 
 {
-    if(hash_found == calculateCRC32(block)&&hasLeadingZeroBits(hash_found,DIFFICULTY))
+    int hash =block.hash;
+    block.hash = 0;
+    if(hash == calculateCRC32(block)&&hasLeadingZeroBits(hash,DIFFICULTY))
     {
+        block.hash = hash;
         return true;
     }
-
+    block.hash = hash;
     return false;
 }
 
@@ -44,22 +47,29 @@ void* Server::start(void* arg)
             BLOCK_T current_block = mined_blocks.front();
             mined_blocks.pop();
             
-        if(!isValidHash(current_block)) //TODO: Why this condition is not working?
-            std::cout<<"Server: invalid hash, block not added"<<std::endl;
-
-            
+        if(!isValidHash(current_block)) 
+        {
+            std::cout<<"Server: invalid hash, block: ";
+            std::cout<<std::hex<<current_block.hash;
+            std::cout<<std::endl;
+            std::cout<<std::dec;
+        }
         else if(current_block.height > blockChain.back().height)// block not mined yet(meaning +1 in height)
         {
-            current_block.hash = hash_found;
             addBlock(current_block);
+            sleep(1);
             block_to_be_mined = {blockChain.back().height + 1,static_cast<int>(time(nullptr)), 0,blockChain.back().hash, DIFFICULTY,1, -1};
         }
         else
-            std::cout<<"Server: block already mined, block not added"<<std::endl;
-
+        {
+            std::cout<<"Server: block: #";
+            std::cout<<current_block.height;
+            std::cout<<" already mined, block with hash: 0x";
+            std::cout<<std::hex<<current_block.hash;
+            std::cout<<std::dec;
+            std::cout<<" not added"<<std::endl;
         }
-
-
+        }
         pthread_mutex_unlock(&block_hash_found_mutex);
     }
     return nullptr;

@@ -26,7 +26,7 @@ public:
     {
         join();
     }
-    bool isValidHash(const BLOCK_T block);
+    bool isValidHash(BLOCK_T block);
     void addBlock(BLOCK_T block);
     void* start(void* arg);
 };
