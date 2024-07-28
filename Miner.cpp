@@ -7,18 +7,23 @@ unsigned long Miner::mineBlock(){
     BLOCK_T miner_block = block_to_be_mined;
     while (!hasLeadingZeros)
     {
-        pthread_mutex_lock(&newBlockByServer_mutex);
+        if (block_to_be_mined.height != miner_block.height){//check if there is a new block
+            pthread_mutex_lock(&newBlockByServer_mutex);
+            miner_block = block_to_be_mined;
+            pthread_mutex_unlock(&newBlockByServer_mutex);
+        }
         miner_block.relayed_by = id;
         crc = calculateCRC32(miner_block);
         hasLeadingZeros = hasLeadingZeroBits(crc,DIFFICULTY);
         if(hasLeadingZeros)
         {
+            pthread_mutex_lock(&newBlockByServer_mutex);
             miner_block.hash = crc;
             mined_blocks.push(miner_block);
             relayMinedBlock(mined_blocks.back());
+            pthread_mutex_unlock(&newBlockByServer_mutex);
         }
         miner_block.nonce++;
-        pthread_mutex_unlock(&newBlockByServer_mutex);
     }
 
     return crc;
@@ -43,10 +48,15 @@ unsigned long FakeMiner::mineBlock()
 }
 
 void* Miner::start(void* arg) {
-        while (true){
-        pthread_mutex_lock(&newBlockByServer_mutex);
-        pthread_cond_wait(&newBlockByServer, &newBlockByServer_mutex);
-        pthread_mutex_unlock(&newBlockByServer_mutex);
+    BLOCK_T miner_block = block_to_be_mined;
+    while (true){
+        if (block_to_be_mined.height != miner_block.height){
+            pthread_mutex_lock(&newBlockByServer_mutex);
+            miner_block = block_to_be_mined;
+            pthread_mutex_unlock(&newBlockByServer_mutex);
+        }
+        std::cout<<"s";
+
         mineBlock();
     }
     return nullptr;
