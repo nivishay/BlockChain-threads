@@ -10,15 +10,16 @@
  BLOCK_T mined_block;
  int  DIFFICULTY = 10;
  std::queue <BLOCK_T> mined_blocks;
+ 
 
  
 int main(int argc, char* argv[])
 {
+    argv[1] = "17";
     DIFFICULTY = atoi(argv[1]);
     std::vector<Miner*> miner_threads(NUM_MINERS);//vector of miner threads
     for (int i = 1; i < NUM_MINERS; i++) 
         miner_threads[i] = new Miner(i);
-
     miner_threads.push_back(new FakeMiner(FAKE_MINER_ID));
 
     Server server;

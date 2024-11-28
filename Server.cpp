@@ -43,7 +43,7 @@ void* Server::start(void* arg)
         {
             BLOCK_T current_block = mined_blocks.front();
             mined_blocks.pop();
-            
+          
         if(!isValidHash(current_block)) 
         {
             std::cout<<"Server: invalid hash, block: ";
@@ -68,8 +68,9 @@ void* Server::start(void* arg)
             std::cout<<std::dec;
             std::cout<<" not added"<<std::endl;
         }
+
         }
-        pthread_mutex_unlock(&block_hash_found_mutex);
     }
     return nullptr;
 }
+
