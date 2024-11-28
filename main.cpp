@@ -1,7 +1,6 @@
 #include "Miner.h"
 #include "Server.h"
 
-
  pthread_cond_t block_hash_found = PTHREAD_COND_INITIALIZER;
  pthread_mutex_t block_hash_found_mutex = PTHREAD_MUTEX_INITIALIZER;
 

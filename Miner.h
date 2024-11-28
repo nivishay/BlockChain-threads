@@ -1,17 +1,24 @@
 #ifndef MINER_H
 #define MINER_H
 #include "BLOCK_T&Globals.h"
-
 class Miner
 {
     protected:
     int id;
-    
     private:
+    BLOCK_T myBlock;
     std::thread miner;
 
     //calculating the hash//
     public:
+   void  changeWorkingBlock(BLOCK_T b){
+        myBlock =b;
+    }
+    BLOCK_T getWorkingBlock()
+    {
+        return myBlock;
+    }
+
     virtual unsigned long mineBlock();
     Miner() = default;
     Miner(int id):id(id)

@@ -1,39 +1,40 @@
 #include "Miner.h"
-
-
+extern BLOCK_T block_to_be_mined;
 unsigned long Miner::mineBlock(){
     uint32_t crc;
     bool hasLeadingZeros = false;
     BLOCK_T miner_block = block_to_be_mined;
+    changeWorkingBlock(miner_block);
     while (!hasLeadingZeros)
     {
-        pthread_mutex_lock(&newBlockByServer_mutex);
         miner_block.relayed_by = id;
         crc = calculateCRC32(miner_block);
         hasLeadingZeros = hasLeadingZeroBits(crc,DIFFICULTY);
         if(hasLeadingZeros)
         {
+            pthread_mutex_lock(&newBlockByServer_mutex);
             miner_block.hash = crc;
             mined_blocks.push(miner_block);
             relayMinedBlock(mined_blocks.back());
+            pthread_mutex_unlock(&newBlockByServer_mutex);
+
         }
         miner_block.nonce++;
-        pthread_mutex_unlock(&newBlockByServer_mutex);
     }
-
     return crc;
 }
 unsigned long FakeMiner::mineBlock()
  {
     uint32_t crc;
     BLOCK_T miner_block = block_to_be_mined;
+    changeWorkingBlock(miner_block);
     while (true)
     {
         miner_block = block_to_be_mined;
-        pthread_mutex_lock(&newBlockByServer_mutex);
         miner_block.relayed_by = id;
         crc = calculateCRC32(miner_block);
         miner_block.hash = crc;
+        pthread_mutex_lock(&newBlockByServer_mutex);
         mined_blocks.push(miner_block);
         relayMinedBlock(mined_blocks.back());
         pthread_mutex_unlock(&newBlockByServer_mutex);
@@ -43,10 +44,12 @@ unsigned long FakeMiner::mineBlock()
 }
 
 void* Miner::start(void* arg) {
-        while (true){
-        pthread_mutex_lock(&newBlockByServer_mutex);
-        pthread_cond_wait(&newBlockByServer, &newBlockByServer_mutex);
-        pthread_mutex_unlock(&newBlockByServer_mutex);
+    while (true){
+        if (getWorkingBlock().height != block_to_be_mined.height) {
+            pthread_mutex_lock(&newBlockByServer_mutex);
+            changeWorkingBlock(block_to_be_mined);
+            pthread_mutex_unlock(&newBlockByServer_mutex);
+        }
         mineBlock();
     }
     return nullptr;
@@ -62,4 +65,3 @@ void Miner::relayMinedBlock(BLOCK_T& block) {
     MinerBlockMessage(block);
     pthread_cond_signal(&block_hash_found);
 }
-

@@ -39,9 +39,6 @@ bool Server::isValidHash(BLOCK_T block)
 void* Server::start(void* arg)
  {
     while (true) {
-        pthread_cond_broadcast(&newBlockByServer);//notify the miners that a new block is found
-        pthread_mutex_lock(&block_hash_found_mutex);
-        pthread_cond_wait(&block_hash_found, &block_hash_found_mutex);
         while(!mined_blocks.empty())
         {
             BLOCK_T current_block = mined_blocks.front();
@@ -57,8 +54,10 @@ void* Server::start(void* arg)
         else if(current_block.height > blockChain.back().height)// block not mined yet(meaning +1 in height)
         {
             addBlock(current_block);
-            sleep(1);
             block_to_be_mined = {blockChain.back().height + 1,static_cast<int>(time(nullptr)), 0,blockChain.back().hash, DIFFICULTY,1, -1};
+            pthread_cond_broadcast(&newBlockByServer);//notify the miners that a new block is found
+            pthread_mutex_lock(&block_hash_found_mutex);
+            pthread_cond_wait(&block_hash_found, &block_hash_found_mutex);
         }
         else
         {

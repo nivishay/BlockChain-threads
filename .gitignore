@@ -72,3 +72,53 @@ build/funCoin
 build/.cmake/api/v1/reply/index-2024-06-10T18-27-26-0569.json
 build/CMakeFiles/funCoin.dir/compiler_depend.internal
 ReadMe.txt
+# Ignore CMake build directories
+build/
+cmake-build-*/
+
+# Ignore CMake generated files
+CMakeCache.txt
+CMakeFiles/
+CTestTestfile.cmake
+cmake_install.cmake
+Makefile
+install_manifest.txt
+
+# Ignore Ninja files (if using Ninja generator)
+build.ninja
+rules.ninja
+
+# Ignore Visual Studio project files (if using VS generator)
+*.vcxproj*
+*.sln
+
+# Ignore macOS generated files
+*.DS_Store
+
+# Ignore backup files or editor-specific files
+*~
+*.swp
+# Ignore Visual Studio specific files and folders
+.vs/
+*.slnx.sqlite
+*.ipch
+*.db
+*.wsuo
+*.json
+
+# Ignore CMake-related generated files
+build/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# Ignore any lock files
+*.lock
+
+# Ignore all untracked intermediate files
+*.o
+*.obj
+*.exe
+*.dll
+*.pdb
